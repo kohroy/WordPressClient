@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using WordPress.Client.Client;
 using WordPress.Client.Models;
 using WordPress.Client.Models.Exceptions;
@@ -56,7 +56,7 @@ namespace WordPress.Client
         /// <summary>
         /// Authentication method
         /// </summary>
-        public AuthMethod AuthMethod { get; set; }
+        public AuthMethod AuthMethod { get; set; } = AuthMethod.JWT;
 
         //public string JWToken;
         /// <summary>

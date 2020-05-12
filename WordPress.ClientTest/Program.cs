@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using WordPress.Client;
-using WordPress.Client.Models;
 
 namespace WordPress.ClientTest
 {
@@ -12,26 +11,21 @@ namespace WordPress.ClientTest
         {
             Console.WriteLine("Hello World!");
 
-            try
-            {
-                Test();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            Test();
 
             Console.Read();
         }
 
         static async Task Test()
         {
-            var wordPressClient = new WordPressClient(ApiCredentials.WordPressUri)
-            {
-                AuthMethod = AuthMethod.JWT
-            };
-            await wordPressClient.RequestJWToken(ApiCredentials.Username, ApiCredentials.Password);
-            var posts = await wordPressClient.Posts.GetAll(useAuth: true);
+            var wordPressClient = new WordPressClient("");
+            await wordPressClient.RequestJWToken("", "");
+
+            //var categories = await wordPressClient.Categories.GetAll(useAuth: true);
+            //Console.WriteLine(JsonConvert.SerializeObject(categories));
+
+            //await wordPressClient.Categories.Create(new Client.Models.Category { Name = "接口创建的分类", Description = "通过接口创建的分类" });
+            var posts = await wordPressClient.Media.GetAll(useAuth: true);
             Console.WriteLine(JsonConvert.SerializeObject(posts));
 
             //using (var httpClient = new HttpClient())
@@ -46,7 +40,6 @@ namespace WordPress.ClientTest
             //    var str = await response.Content.ReadAsStringAsync();
             //    Console.WriteLine(str);
             //}
-            Console.Read();
         }
     }
 }

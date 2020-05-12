@@ -16,8 +16,8 @@ namespace WordPress.Client.Utility
     public class HttpHelper
     {
         private static readonly HttpClient _httpClient = new HttpClient();
-        private readonly string _WordpressURI;
-        private static readonly KeyValuePair<string,string> UserAgent=new KeyValuePair<string, string>("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 Edg/81.0.416.72");
+        private readonly string _wordpressURI;
+        private static readonly KeyValuePair<string,string> _userAgent=new KeyValuePair<string, string>("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 Edg/81.0.416.72");
 
         /// <summary>
         /// JSON Web Token
@@ -47,7 +47,7 @@ namespace WordPress.Client.Utility
         /// <param name="wordpressURI">base WP REST API endpoint EX. http://demo.com/wp-json/ </param>
         public HttpHelper(string wordpressURI)
         {
-            _WordpressURI = wordpressURI;
+            _wordpressURI = wordpressURI;
 
             // by default don't crash on missing member
             JsonSerializerSettings = new JsonSerializerSettings
@@ -71,9 +71,9 @@ namespace WordPress.Client.Utility
             try
             {
                 HttpResponseMessage response;
-                using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_WordpressURI}{route}{embedParam}"))
+                using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_wordpressURI}{route}{embedParam}"))
                 {
-                    requestMessage.Headers.Add(UserAgent.Key,UserAgent.Value);
+                    requestMessage.Headers.Add(_userAgent.Key,_userAgent.Value);
                     if (isAuthRequired)
                     {
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", JWToken);
@@ -109,9 +109,9 @@ namespace WordPress.Client.Utility
             try
             {
                 HttpResponseMessage response;
-                using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_WordpressURI}{route}"))
+                using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_wordpressURI}{route}"))
                 {
-                    requestMessage.Headers.Add(UserAgent.Key,UserAgent.Value);
+                    requestMessage.Headers.Add(_userAgent.Key,_userAgent.Value);
                     if (isAuthRequired)
                     {
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", JWToken);
@@ -148,9 +148,9 @@ namespace WordPress.Client.Utility
             try
             {
                 HttpResponseMessage response;
-                using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_WordpressURI}{route}"))
+                using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_wordpressURI}{route}"))
                 {
-                    requestMessage.Headers.Add(UserAgent.Key,UserAgent.Value);
+                    requestMessage.Headers.Add(_userAgent.Key,_userAgent.Value);
                     if (isAuthRequired)
                     {
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", JWToken);
