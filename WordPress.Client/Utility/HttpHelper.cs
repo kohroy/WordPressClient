@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using WordPress.Client.Models;
 using WordPress.Client.Models.Exceptions;
 
@@ -17,7 +17,7 @@ namespace WordPress.Client.Utility
     {
         private static readonly HttpClient _httpClient = new HttpClient();
         private readonly string _wordpressURI;
-        private static readonly KeyValuePair<string,string> _userAgent=new KeyValuePair<string, string>("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 Edg/81.0.416.72");
+        private static readonly KeyValuePair<string, string> _userAgent = new KeyValuePair<string, string>("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0");
 
         /// <summary>
         /// JSON Web Token
@@ -56,16 +56,13 @@ namespace WordPress.Client.Utility
             };
         }
 
-        internal async Task<TClass> GetRequest<TClass>(string route, bool embed, bool isAuthRequired = false)
+        internal async Task<TClass> GetRequest<TClass>(string route, bool embed, bool isAuthRequired = true)
             where TClass : class
         {
             string embedParam = "";
             if (embed)
             {
-                if (route.Contains("?"))
-                    embedParam = "&_embed";
-                else
-                    embedParam = "?_embed";
+                embedParam = route.Contains("?") ? "&_embed" : "?_embed";
             }
 
             try
@@ -73,7 +70,7 @@ namespace WordPress.Client.Utility
                 HttpResponseMessage response;
                 using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"{_wordpressURI}{route}{embedParam}"))
                 {
-                    requestMessage.Headers.Add(_userAgent.Key,_userAgent.Value);
+                    requestMessage.Headers.Add(_userAgent.Key, _userAgent.Value);
                     if (isAuthRequired)
                     {
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", JWToken);
@@ -85,9 +82,15 @@ namespace WordPress.Client.Utility
                 if (response.IsSuccessStatusCode)
                 {
                     if (HttpResponsePreProcessing != null)
+                    {
                         responseString = HttpResponsePreProcessing(responseString);
+                    }
+
                     if (JsonSerializerSettings != null)
+                    {
                         return JsonConvert.DeserializeObject<TClass>(responseString, JsonSerializerSettings);
+                    }
+
                     return JsonConvert.DeserializeObject<TClass>(responseString);
                 }
                 else
@@ -111,7 +114,7 @@ namespace WordPress.Client.Utility
                 HttpResponseMessage response;
                 using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_wordpressURI}{route}"))
                 {
-                    requestMessage.Headers.Add(_userAgent.Key,_userAgent.Value);
+                    requestMessage.Headers.Add(_userAgent.Key, _userAgent.Value);
                     if (isAuthRequired)
                     {
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", JWToken);
@@ -125,9 +128,15 @@ namespace WordPress.Client.Utility
                 if (response.IsSuccessStatusCode)
                 {
                     if (HttpResponsePreProcessing != null)
+                    {
                         responseString = HttpResponsePreProcessing(responseString);
+                    }
+
                     if (JsonSerializerSettings != null)
+                    {
                         return (JsonConvert.DeserializeObject<TClass>(responseString, JsonSerializerSettings), response);
+                    }
+
                     return (JsonConvert.DeserializeObject<TClass>(responseString), response);
                 }
                 else
@@ -150,7 +159,7 @@ namespace WordPress.Client.Utility
                 HttpResponseMessage response;
                 using (var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"{_wordpressURI}{route}"))
                 {
-                    requestMessage.Headers.Add(_userAgent.Key,_userAgent.Value);
+                    requestMessage.Headers.Add(_userAgent.Key, _userAgent.Value);
                     if (isAuthRequired)
                     {
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", JWToken);

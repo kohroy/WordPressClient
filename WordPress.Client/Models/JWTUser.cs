@@ -4,16 +4,16 @@ namespace WordPress.Client.Models
 {
     class JWTUser
     {
-        [JsonProperty("jwt_token")]
+        [JsonProperty("token")]
         public string Token { get; set; }
 
-        [JsonProperty("user_display_name")]
+        [JsonProperty("displayName")]
         public string DisplayName { get; set; }
 
-        [JsonProperty("user_email")]
+        [JsonProperty("email")]
         public string Email { get; set; }
 
-        [JsonProperty("user_nicename")]
+        [JsonProperty("nicename")]
         public string NiceName { get; set; }
     }
 }

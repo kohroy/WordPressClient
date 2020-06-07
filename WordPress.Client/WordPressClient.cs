@@ -18,7 +18,7 @@ namespace WordPress.Client
     {
         private readonly HttpHelper _httpHelper;
         private readonly string _defaultPath;
-        private const string _jwtPath = "api/v1/";
+        private const string _jwtPath = "jwt-auth/v1/";
 
         /// <summary>
         /// WordPressUri holds the WordPress API endpoint, e.g. "http://demo.wp-api.org/wp-json/wp/v2/"
@@ -152,9 +152,10 @@ namespace WordPress.Client
         /// Get site settings
         /// </summary>
         /// <returns>Site settings</returns>
-        public Task<Settings> GetSettings()
+        public async Task<Settings> GetSettings()
         {
-            return _httpHelper.GetRequest<Settings>($"{_defaultPath}settings", false, true);
+            var setting = await _httpHelper.GetRequest<Settings>($"{_defaultPath}settings", false, true);
+            return setting;
         }
 
         /// <summary>
@@ -186,8 +187,8 @@ namespace WordPress.Client
                     new KeyValuePair<string, string>("username", Username),
                     new KeyValuePair<string, string>("password", Password)
                 });
-            (JWTUser jwtUser, _) = await _httpHelper.PostRequest<JWTUser>(route, formContent, false).ConfigureAwait(false);
-            _httpHelper.JWToken = jwtUser?.Token;
+            (var apiResult, _) = await _httpHelper.PostRequest<ApiResult<JWTUser>>(route, formContent, false).ConfigureAwait(false);
+            _httpHelper.JWToken = apiResult?.Data?.Token;
         }
 
         /// <summary>
@@ -207,7 +208,7 @@ namespace WordPress.Client
             var route = $"{_jwtPath}token/validate";
             try
             {
-                (JWTUser jwtUser, HttpResponseMessage repsonse) = await _httpHelper.PostRequest<JWTUser>(route, null, true).ConfigureAwait(false);
+                (var apiResult, HttpResponseMessage repsonse) = await _httpHelper.PostRequest<JWTUser>(route, null, true).ConfigureAwait(false);
                 return repsonse.IsSuccessStatusCode;
             }
             catch (WPException)
